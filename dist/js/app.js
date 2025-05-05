@@ -1,6 +1,6 @@
 (() => {
     "use strict";
-    const flsModules = {};
+    const modules_flsModules = {};
     function isWebp() {
         function testWebP(callback) {
             let webP = new Image;
@@ -17,6 +17,75 @@
     function getHash() {
         if (location.hash) return location.hash.replace("#", "");
     }
+    let _slideUp = (target, duration = 500, showmore = 0) => {
+        if (!target.classList.contains("_slide")) {
+            target.classList.add("_slide");
+            target.style.transitionProperty = "height, margin, padding";
+            target.style.transitionDuration = duration + "ms";
+            target.style.height = `${target.offsetHeight}px`;
+            target.offsetHeight;
+            target.style.overflow = "hidden";
+            target.style.height = showmore ? `${showmore}px` : `0px`;
+            target.style.paddingTop = 0;
+            target.style.paddingBottom = 0;
+            target.style.marginTop = 0;
+            target.style.marginBottom = 0;
+            window.setTimeout((() => {
+                target.hidden = !showmore ? true : false;
+                !showmore ? target.style.removeProperty("height") : null;
+                target.style.removeProperty("padding-top");
+                target.style.removeProperty("padding-bottom");
+                target.style.removeProperty("margin-top");
+                target.style.removeProperty("margin-bottom");
+                !showmore ? target.style.removeProperty("overflow") : null;
+                target.style.removeProperty("transition-duration");
+                target.style.removeProperty("transition-property");
+                target.classList.remove("_slide");
+                document.dispatchEvent(new CustomEvent("slideUpDone", {
+                    detail: {
+                        target
+                    }
+                }));
+            }), duration);
+        }
+    };
+    let _slideDown = (target, duration = 500, showmore = 0) => {
+        if (!target.classList.contains("_slide")) {
+            target.classList.add("_slide");
+            target.hidden = target.hidden ? false : null;
+            showmore ? target.style.removeProperty("height") : null;
+            let height = target.offsetHeight;
+            target.style.overflow = "hidden";
+            target.style.height = showmore ? `${showmore}px` : `0px`;
+            target.style.paddingTop = 0;
+            target.style.paddingBottom = 0;
+            target.style.marginTop = 0;
+            target.style.marginBottom = 0;
+            target.offsetHeight;
+            target.style.transitionProperty = "height, margin, padding";
+            target.style.transitionDuration = duration + "ms";
+            target.style.height = height + "px";
+            target.style.removeProperty("padding-top");
+            target.style.removeProperty("padding-bottom");
+            target.style.removeProperty("margin-top");
+            target.style.removeProperty("margin-bottom");
+            window.setTimeout((() => {
+                target.style.removeProperty("height");
+                target.style.removeProperty("overflow");
+                target.style.removeProperty("transition-duration");
+                target.style.removeProperty("transition-property");
+                target.classList.remove("_slide");
+                document.dispatchEvent(new CustomEvent("slideDownDone", {
+                    detail: {
+                        target
+                    }
+                }));
+            }), duration);
+        }
+    };
+    let _slideToggle = (target, duration = 500) => {
+        if (target.hidden) return _slideDown(target, duration); else return _slideUp(target, duration);
+    };
     let bodyLockStatus = true;
     let bodyLockToggle = (delay = 500) => {
         if (document.documentElement.classList.contains("lock")) bodyUnlock(delay); else bodyLock(delay);
@@ -67,7 +136,7 @@
         bodyUnlock();
         document.documentElement.classList.remove("menu-open");
     }
-    function FLS(message) {
+    function functions_FLS(message) {
         setTimeout((() => {
             if (window.FLS) console.log(message);
         }), 0);
@@ -77,7 +146,7 @@
             return self.indexOf(item) === index;
         }));
     }
-    let gotoBlock = (targetBlock, noHeader = false, speed = 500, offsetTop = 0) => {
+    let gotoblock_gotoBlock = (targetBlock, noHeader = false, speed = 500, offsetTop = 0) => {
         const targetBlockElement = document.querySelector(targetBlock);
         if (targetBlockElement) {
             let headerItem = "";
@@ -112,8 +181,8 @@
                     behavior: "smooth"
                 });
             }
-            FLS(`[gotoBlock]: Юхуу...їдемо до ${targetBlock}`);
-        } else FLS(`[gotoBlock]: Йой... Такого блоку немає на сторінці: ${targetBlock}`);
+            functions_FLS(`[gotoBlock]: Юхуу...їдемо до ${targetBlock}`);
+        } else functions_FLS(`[gotoBlock]: Йой... Такого блоку немає на сторінці: ${targetBlock}`);
     };
     let formValidate = {
         getErrors(form) {
@@ -168,11 +237,11 @@
                     const checkbox = checkboxes[index];
                     checkbox.checked = false;
                 }
-                if (flsModules.select) {
+                if (modules_flsModules.select) {
                     let selects = form.querySelectorAll(".select");
                     if (selects.length) for (let index = 0; index < selects.length; index++) {
                         const select = selects[index].querySelector("select");
-                        flsModules.select.selectBuild(select);
+                        modules_flsModules.select.selectBuild(select);
                     }
                 }
             }), 0);
@@ -181,71 +250,367 @@
             return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(formRequiredItem.value);
         }
     };
-    function formSubmit() {
-        const forms = document.forms;
-        if (forms.length) for (const form of forms) {
-            form.addEventListener("submit", (function(e) {
-                const form = e.target;
-                formSubmitAction(form, e);
-            }));
-            form.addEventListener("reset", (function(e) {
-                const form = e.target;
-                formValidate.formClean(form);
-            }));
-        }
-        async function formSubmitAction(form, e) {
-            const error = !form.hasAttribute("data-no-validate") ? formValidate.getErrors(form) : 0;
-            if (error === 0) {
-                const ajax = form.hasAttribute("data-ajax");
-                if (ajax) {
-                    e.preventDefault();
-                    const formAction = form.getAttribute("action") ? form.getAttribute("action").trim() : "#";
-                    const formMethod = form.getAttribute("method") ? form.getAttribute("method").trim() : "GET";
-                    const formData = new FormData(form);
-                    form.classList.add("_sending");
-                    const response = await fetch(formAction, {
-                        method: formMethod,
-                        body: formData
-                    });
-                    if (response.ok) {
-                        let responseResult = await response.json();
-                        form.classList.remove("_sending");
-                        formSent(form, responseResult);
-                    } else {
-                        alert("Помилка");
-                        form.classList.remove("_sending");
-                    }
-                } else if (form.hasAttribute("data-dev")) {
-                    e.preventDefault();
-                    formSent(form);
-                }
-            } else {
-                e.preventDefault();
-                if (form.querySelector("._form-error") && form.hasAttribute("data-goto-error")) {
-                    const formGoToErrorClass = form.dataset.gotoError ? form.dataset.gotoError : "._form-error";
-                    gotoBlock(formGoToErrorClass, true, 1e3);
-                }
+    class SelectConstructor {
+        constructor(props, data = null) {
+            let defaultConfig = {
+                init: true,
+                logging: true,
+                speed: 150
+            };
+            this.config = Object.assign(defaultConfig, props);
+            this.selectClasses = {
+                classSelect: "select",
+                classSelectBody: "select__body",
+                classSelectTitle: "select__title",
+                classSelectValue: "select__value",
+                classSelectLabel: "select__label",
+                classSelectInput: "select__input",
+                classSelectText: "select__text",
+                classSelectLink: "select__link",
+                classSelectOptions: "select__options",
+                classSelectOptionsScroll: "select__scroll",
+                classSelectOption: "select__option",
+                classSelectContent: "select__content",
+                classSelectRow: "select__row",
+                classSelectData: "select__asset",
+                classSelectDisabled: "_select-disabled",
+                classSelectTag: "_select-tag",
+                classSelectOpen: "_select-open",
+                classSelectActive: "_select-active",
+                classSelectFocus: "_select-focus",
+                classSelectMultiple: "_select-multiple",
+                classSelectCheckBox: "_select-checkbox",
+                classSelectOptionSelected: "_select-selected",
+                classSelectPseudoLabel: "_select-pseudo-label"
+            };
+            this._this = this;
+            if (this.config.init) {
+                const selectItems = data ? document.querySelectorAll(data) : document.querySelectorAll("select");
+                if (selectItems.length) {
+                    this.selectsInit(selectItems);
+                    this.setLogging(`Прокинувся, построїв селектов: (${selectItems.length})`);
+                } else this.setLogging("Сплю, немає жодного select");
             }
         }
-        function formSent(form, responseResult = ``) {
-            document.dispatchEvent(new CustomEvent("formSent", {
-                detail: {
-                    form
-                }
+        getSelectClass(className) {
+            return `.${className}`;
+        }
+        getSelectElement(selectItem, className) {
+            return {
+                originalSelect: selectItem.querySelector("select"),
+                selectElement: selectItem.querySelector(this.getSelectClass(className))
+            };
+        }
+        selectsInit(selectItems) {
+            selectItems.forEach(((originalSelect, index) => {
+                this.selectInit(originalSelect, index + 1);
             }));
+            document.addEventListener("click", function(e) {
+                this.selectsActions(e);
+            }.bind(this));
+            document.addEventListener("keydown", function(e) {
+                this.selectsActions(e);
+            }.bind(this));
+            document.addEventListener("focusin", function(e) {
+                this.selectsActions(e);
+            }.bind(this));
+            document.addEventListener("focusout", function(e) {
+                this.selectsActions(e);
+            }.bind(this));
+        }
+        selectInit(originalSelect, index) {
+            const _this = this;
+            let selectItem = document.createElement("div");
+            selectItem.classList.add(this.selectClasses.classSelect);
+            originalSelect.parentNode.insertBefore(selectItem, originalSelect);
+            selectItem.appendChild(originalSelect);
+            originalSelect.hidden = true;
+            index ? originalSelect.dataset.id = index : null;
+            if (this.getSelectPlaceholder(originalSelect)) {
+                originalSelect.dataset.placeholder = this.getSelectPlaceholder(originalSelect).value;
+                if (this.getSelectPlaceholder(originalSelect).label.show) {
+                    const selectItemTitle = this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement;
+                    selectItemTitle.insertAdjacentHTML("afterbegin", `<span class="${this.selectClasses.classSelectLabel}">${this.getSelectPlaceholder(originalSelect).label.text ? this.getSelectPlaceholder(originalSelect).label.text : this.getSelectPlaceholder(originalSelect).value}</span>`);
+                }
+            }
+            selectItem.insertAdjacentHTML("beforeend", `<div class="${this.selectClasses.classSelectBody}"><div hidden class="${this.selectClasses.classSelectOptions}"></div></div>`);
+            this.selectBuild(originalSelect);
+            originalSelect.dataset.speed = originalSelect.dataset.speed ? originalSelect.dataset.speed : this.config.speed;
+            this.config.speed = +originalSelect.dataset.speed;
+            originalSelect.addEventListener("change", (function(e) {
+                _this.selectChange(e);
+            }));
+        }
+        selectBuild(originalSelect) {
+            const selectItem = originalSelect.parentElement;
+            selectItem.dataset.id = originalSelect.dataset.id;
+            originalSelect.dataset.classModif ? selectItem.classList.add(`select_${originalSelect.dataset.classModif}`) : null;
+            originalSelect.multiple ? selectItem.classList.add(this.selectClasses.classSelectMultiple) : selectItem.classList.remove(this.selectClasses.classSelectMultiple);
+            originalSelect.hasAttribute("data-checkbox") && originalSelect.multiple ? selectItem.classList.add(this.selectClasses.classSelectCheckBox) : selectItem.classList.remove(this.selectClasses.classSelectCheckBox);
+            this.setSelectTitleValue(selectItem, originalSelect);
+            this.setOptions(selectItem, originalSelect);
+            originalSelect.hasAttribute("data-search") ? this.searchActions(selectItem) : null;
+            originalSelect.hasAttribute("data-open") ? this.selectAction(selectItem) : null;
+            this.selectDisabled(selectItem, originalSelect);
+        }
+        selectsActions(e) {
+            const targetElement = e.target;
+            const targetType = e.type;
+            if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelect)) || targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag))) {
+                const selectItem = targetElement.closest(".select") ? targetElement.closest(".select") : document.querySelector(`.${this.selectClasses.classSelect}[data-id="${targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag)).dataset.selectId}"]`);
+                const originalSelect = this.getSelectElement(selectItem).originalSelect;
+                if (targetType === "click") {
+                    if (!originalSelect.disabled) if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag))) {
+                        const targetTag = targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag));
+                        const optionItem = document.querySelector(`.${this.selectClasses.classSelect}[data-id="${targetTag.dataset.selectId}"] .select__option[data-value="${targetTag.dataset.value}"]`);
+                        this.optionAction(selectItem, originalSelect, optionItem);
+                    } else if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTitle))) this.selectAction(selectItem); else if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectOption))) {
+                        const optionItem = targetElement.closest(this.getSelectClass(this.selectClasses.classSelectOption));
+                        this.optionAction(selectItem, originalSelect, optionItem);
+                    }
+                } else if (targetType === "focusin" || targetType === "focusout") {
+                    if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelect))) targetType === "focusin" ? selectItem.classList.add(this.selectClasses.classSelectFocus) : selectItem.classList.remove(this.selectClasses.classSelectFocus);
+                } else if (targetType === "keydown" && e.code === "Escape") this.selectsСlose();
+            } else this.selectsСlose();
+        }
+        selectsСlose(selectOneGroup) {
+            const selectsGroup = selectOneGroup ? selectOneGroup : document;
+            const selectActiveItems = selectsGroup.querySelectorAll(`${this.getSelectClass(this.selectClasses.classSelect)}${this.getSelectClass(this.selectClasses.classSelectOpen)}`);
+            if (selectActiveItems.length) selectActiveItems.forEach((selectActiveItem => {
+                this.selectСlose(selectActiveItem);
+            }));
+        }
+        selectСlose(selectItem) {
+            const originalSelect = this.getSelectElement(selectItem).originalSelect;
+            const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+            if (!selectOptions.classList.contains("_slide")) {
+                selectItem.classList.remove(this.selectClasses.classSelectOpen);
+                _slideUp(selectOptions, originalSelect.dataset.speed);
+                setTimeout((() => {
+                    selectItem.style.zIndex = "";
+                }), originalSelect.dataset.speed);
+            }
+        }
+        selectAction(selectItem) {
+            const originalSelect = this.getSelectElement(selectItem).originalSelect;
+            const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+            const selectOpenzIndex = originalSelect.dataset.zIndex ? originalSelect.dataset.zIndex : 3;
+            this.setOptionsPosition(selectItem);
+            if (originalSelect.closest("[data-one-select]")) {
+                const selectOneGroup = originalSelect.closest("[data-one-select]");
+                this.selectsСlose(selectOneGroup);
+            }
             setTimeout((() => {
-                if (flsModules.popup) {
-                    const popup = form.dataset.popupMessage;
-                    popup ? flsModules.popup.open(popup) : null;
+                if (!selectOptions.classList.contains("_slide")) {
+                    selectItem.classList.toggle(this.selectClasses.classSelectOpen);
+                    _slideToggle(selectOptions, originalSelect.dataset.speed);
+                    if (selectItem.classList.contains(this.selectClasses.classSelectOpen)) selectItem.style.zIndex = selectOpenzIndex; else setTimeout((() => {
+                        selectItem.style.zIndex = "";
+                    }), originalSelect.dataset.speed);
                 }
             }), 0);
-            formValidate.formClean(form);
-            formLogging(`Форму відправлено!`);
         }
-        function formLogging(message) {
-            FLS(`[Форми]: ${message}`);
+        setSelectTitleValue(selectItem, originalSelect) {
+            const selectItemBody = this.getSelectElement(selectItem, this.selectClasses.classSelectBody).selectElement;
+            const selectItemTitle = this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement;
+            if (selectItemTitle) selectItemTitle.remove();
+            selectItemBody.insertAdjacentHTML("afterbegin", this.getSelectTitleValue(selectItem, originalSelect));
+            originalSelect.hasAttribute("data-search") ? this.searchActions(selectItem) : null;
+        }
+        getSelectTitleValue(selectItem, originalSelect) {
+            let selectTitleValue = this.getSelectedOptionsData(originalSelect, 2).html;
+            if (originalSelect.multiple && originalSelect.hasAttribute("data-tags")) {
+                selectTitleValue = this.getSelectedOptionsData(originalSelect).elements.map((option => `<span role="button" data-select-id="${selectItem.dataset.id}" data-value="${option.value}" class="_select-tag">${this.getSelectElementContent(option)}</span>`)).join("");
+                if (originalSelect.dataset.tags && document.querySelector(originalSelect.dataset.tags)) {
+                    document.querySelector(originalSelect.dataset.tags).innerHTML = selectTitleValue;
+                    if (originalSelect.hasAttribute("data-search")) selectTitleValue = false;
+                }
+            }
+            selectTitleValue = selectTitleValue.length ? selectTitleValue : originalSelect.dataset.placeholder ? originalSelect.dataset.placeholder : "";
+            let pseudoAttribute = "";
+            let pseudoAttributeClass = "";
+            if (originalSelect.hasAttribute("data-pseudo-label")) {
+                pseudoAttribute = originalSelect.dataset.pseudoLabel ? ` data-pseudo-label="${originalSelect.dataset.pseudoLabel}"` : ` data-pseudo-label="Заповніть атрибут"`;
+                pseudoAttributeClass = ` ${this.selectClasses.classSelectPseudoLabel}`;
+            }
+            this.getSelectedOptionsData(originalSelect).values.length ? selectItem.classList.add(this.selectClasses.classSelectActive) : selectItem.classList.remove(this.selectClasses.classSelectActive);
+            if (originalSelect.hasAttribute("data-search")) return `<div class="${this.selectClasses.classSelectTitle}"><span${pseudoAttribute} class="${this.selectClasses.classSelectValue}"><input autocomplete="off" type="text" placeholder="${selectTitleValue}" data-placeholder="${selectTitleValue}" class="${this.selectClasses.classSelectInput}"></span></div>`; else {
+                const customClass = this.getSelectedOptionsData(originalSelect).elements.length && this.getSelectedOptionsData(originalSelect).elements[0].dataset.class ? ` ${this.getSelectedOptionsData(originalSelect).elements[0].dataset.class}` : "";
+                return `<button type="button" class="${this.selectClasses.classSelectTitle}"><span${pseudoAttribute} class="${this.selectClasses.classSelectValue}${pseudoAttributeClass}"><span class="${this.selectClasses.classSelectContent}${customClass}">${selectTitleValue}</span></span></button>`;
+            }
+        }
+        getSelectElementContent(selectOption) {
+            const selectOptionData = selectOption.dataset.asset ? `${selectOption.dataset.asset}` : "";
+            const selectOptionDataHTML = selectOptionData.indexOf("img") >= 0 ? `<img src="${selectOptionData}" alt="">` : selectOptionData;
+            let selectOptionContentHTML = ``;
+            selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectRow}">` : "";
+            selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectData}">` : "";
+            selectOptionContentHTML += selectOptionData ? selectOptionDataHTML : "";
+            selectOptionContentHTML += selectOptionData ? `</span>` : "";
+            selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectText}">` : "";
+            selectOptionContentHTML += selectOption.textContent;
+            selectOptionContentHTML += selectOptionData ? `</span>` : "";
+            selectOptionContentHTML += selectOptionData ? `</span>` : "";
+            return selectOptionContentHTML;
+        }
+        getSelectPlaceholder(originalSelect) {
+            const selectPlaceholder = Array.from(originalSelect.options).find((option => !option.value));
+            if (selectPlaceholder) return {
+                value: selectPlaceholder.textContent,
+                show: selectPlaceholder.hasAttribute("data-show"),
+                label: {
+                    show: selectPlaceholder.hasAttribute("data-label"),
+                    text: selectPlaceholder.dataset.label
+                }
+            };
+        }
+        getSelectedOptionsData(originalSelect, type) {
+            let selectedOptions = [];
+            if (originalSelect.multiple) selectedOptions = Array.from(originalSelect.options).filter((option => option.value)).filter((option => option.selected)); else selectedOptions.push(originalSelect.options[originalSelect.selectedIndex]);
+            return {
+                elements: selectedOptions.map((option => option)),
+                values: selectedOptions.filter((option => option.value)).map((option => option.value)),
+                html: selectedOptions.map((option => this.getSelectElementContent(option)))
+            };
+        }
+        getOptions(originalSelect) {
+            const selectOptionsScroll = originalSelect.hasAttribute("data-scroll") ? `data-simplebar` : "";
+            const customMaxHeightValue = +originalSelect.dataset.scroll ? +originalSelect.dataset.scroll : null;
+            let selectOptions = Array.from(originalSelect.options);
+            if (selectOptions.length > 0) {
+                let selectOptionsHTML = ``;
+                if (this.getSelectPlaceholder(originalSelect) && !this.getSelectPlaceholder(originalSelect).show || originalSelect.multiple) selectOptions = selectOptions.filter((option => option.value));
+                selectOptionsHTML += `<div ${selectOptionsScroll} ${selectOptionsScroll ? `style="max-height: ${customMaxHeightValue}px"` : ""} class="${this.selectClasses.classSelectOptionsScroll}">`;
+                selectOptions.forEach((selectOption => {
+                    selectOptionsHTML += this.getOption(selectOption, originalSelect);
+                }));
+                selectOptionsHTML += `</div>`;
+                return selectOptionsHTML;
+            }
+        }
+        getOption(selectOption, originalSelect) {
+            const selectOptionSelected = selectOption.selected && originalSelect.multiple ? ` ${this.selectClasses.classSelectOptionSelected}` : "";
+            const selectOptionHide = selectOption.selected && !originalSelect.hasAttribute("data-show-selected") && !originalSelect.multiple ? `hidden` : ``;
+            const selectOptionClass = selectOption.dataset.class ? ` ${selectOption.dataset.class}` : "";
+            const selectOptionLink = selectOption.dataset.href ? selectOption.dataset.href : false;
+            const selectOptionLinkTarget = selectOption.hasAttribute("data-href-blank") ? `target="_blank"` : "";
+            let selectOptionHTML = ``;
+            selectOptionHTML += selectOptionLink ? `<a ${selectOptionLinkTarget} ${selectOptionHide} href="${selectOptionLink}" data-value="${selectOption.value}" class="${this.selectClasses.classSelectOption}${selectOptionClass}${selectOptionSelected}">` : `<button ${selectOptionHide} class="${this.selectClasses.classSelectOption}${selectOptionClass}${selectOptionSelected}" data-value="${selectOption.value}" type="button">`;
+            selectOptionHTML += this.getSelectElementContent(selectOption);
+            selectOptionHTML += selectOptionLink ? `</a>` : `</button>`;
+            return selectOptionHTML;
+        }
+        setOptions(selectItem, originalSelect) {
+            const selectItemOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+            selectItemOptions.innerHTML = this.getOptions(originalSelect);
+        }
+        setOptionsPosition(selectItem) {
+            const originalSelect = this.getSelectElement(selectItem).originalSelect;
+            const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+            const selectItemScroll = this.getSelectElement(selectItem, this.selectClasses.classSelectOptionsScroll).selectElement;
+            const customMaxHeightValue = +originalSelect.dataset.scroll ? `${+originalSelect.dataset.scroll}px` : ``;
+            const selectOptionsPosMargin = +originalSelect.dataset.optionsMargin ? +originalSelect.dataset.optionsMargin : 10;
+            if (!selectItem.classList.contains(this.selectClasses.classSelectOpen)) {
+                selectOptions.hidden = false;
+                const selectItemScrollHeight = selectItemScroll.offsetHeight ? selectItemScroll.offsetHeight : parseInt(window.getComputedStyle(selectItemScroll).getPropertyValue("max-height"));
+                const selectOptionsHeight = selectOptions.offsetHeight > selectItemScrollHeight ? selectOptions.offsetHeight : selectItemScrollHeight + selectOptions.offsetHeight;
+                const selectOptionsScrollHeight = selectOptionsHeight - selectItemScrollHeight;
+                selectOptions.hidden = true;
+                const selectItemHeight = selectItem.offsetHeight;
+                const selectItemPos = selectItem.getBoundingClientRect().top;
+                const selectItemTotal = selectItemPos + selectOptionsHeight + selectItemHeight + selectOptionsScrollHeight;
+                const selectItemResult = window.innerHeight - (selectItemTotal + selectOptionsPosMargin);
+                if (selectItemResult < 0) {
+                    const newMaxHeightValue = selectOptionsHeight + selectItemResult;
+                    if (newMaxHeightValue < 100) {
+                        selectItem.classList.add("select--show-top");
+                        selectItemScroll.style.maxHeight = selectItemPos < selectOptionsHeight ? `${selectItemPos - (selectOptionsHeight - selectItemPos)}px` : customMaxHeightValue;
+                    } else {
+                        selectItem.classList.remove("select--show-top");
+                        selectItemScroll.style.maxHeight = `${newMaxHeightValue}px`;
+                    }
+                }
+            } else setTimeout((() => {
+                selectItem.classList.remove("select--show-top");
+                selectItemScroll.style.maxHeight = customMaxHeightValue;
+            }), +originalSelect.dataset.speed);
+        }
+        optionAction(selectItem, originalSelect, optionItem) {
+            const selectOptions = selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOptions)}`);
+            if (!selectOptions.classList.contains("_slide")) {
+                if (originalSelect.multiple) {
+                    optionItem.classList.toggle(this.selectClasses.classSelectOptionSelected);
+                    const originalSelectSelectedItems = this.getSelectedOptionsData(originalSelect).elements;
+                    originalSelectSelectedItems.forEach((originalSelectSelectedItem => {
+                        originalSelectSelectedItem.removeAttribute("selected");
+                    }));
+                    const selectSelectedItems = selectItem.querySelectorAll(this.getSelectClass(this.selectClasses.classSelectOptionSelected));
+                    selectSelectedItems.forEach((selectSelectedItems => {
+                        originalSelect.querySelector(`option[value = "${selectSelectedItems.dataset.value}"]`).setAttribute("selected", "selected");
+                    }));
+                } else {
+                    if (!originalSelect.hasAttribute("data-show-selected")) setTimeout((() => {
+                        if (selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOption)}[hidden]`)) selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOption)}[hidden]`).hidden = false;
+                        optionItem.hidden = true;
+                    }), this.config.speed);
+                    originalSelect.value = optionItem.hasAttribute("data-value") ? optionItem.dataset.value : optionItem.textContent;
+                    this.selectAction(selectItem);
+                }
+                this.setSelectTitleValue(selectItem, originalSelect);
+                this.setSelectChange(originalSelect);
+            }
+        }
+        selectChange(e) {
+            const originalSelect = e.target;
+            this.selectBuild(originalSelect);
+            this.setSelectChange(originalSelect);
+        }
+        setSelectChange(originalSelect) {
+            if (originalSelect.hasAttribute("data-validate")) formValidate.validateInput(originalSelect);
+            if (originalSelect.hasAttribute("data-submit") && originalSelect.value) {
+                let tempButton = document.createElement("button");
+                tempButton.type = "submit";
+                originalSelect.closest("form").append(tempButton);
+                tempButton.click();
+                tempButton.remove();
+            }
+            const selectItem = originalSelect.parentElement;
+            this.selectCallback(selectItem, originalSelect);
+        }
+        selectDisabled(selectItem, originalSelect) {
+            if (originalSelect.disabled) {
+                selectItem.classList.add(this.selectClasses.classSelectDisabled);
+                this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement.disabled = true;
+            } else {
+                selectItem.classList.remove(this.selectClasses.classSelectDisabled);
+                this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement.disabled = false;
+            }
+        }
+        searchActions(selectItem) {
+            this.getSelectElement(selectItem).originalSelect;
+            const selectInput = this.getSelectElement(selectItem, this.selectClasses.classSelectInput).selectElement;
+            const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+            const selectOptionsItems = selectOptions.querySelectorAll(`.${this.selectClasses.classSelectOption} `);
+            const _this = this;
+            selectInput.addEventListener("input", (function() {
+                selectOptionsItems.forEach((selectOptionsItem => {
+                    if (selectOptionsItem.textContent.toUpperCase().includes(selectInput.value.toUpperCase())) selectOptionsItem.hidden = false; else selectOptionsItem.hidden = true;
+                }));
+                selectOptions.hidden === true ? _this.selectAction(selectItem) : null;
+            }));
+        }
+        selectCallback(selectItem, originalSelect) {
+            document.dispatchEvent(new CustomEvent("selectCallback", {
+                detail: {
+                    select: originalSelect
+                }
+            }));
+        }
+        setLogging(message) {
+            this.config.logging ? functions_FLS(`[select]: ${message} `) : null;
         }
     }
+    modules_flsModules.select = new SelectConstructor({});
     function ssr_window_esm_isObject(obj) {
         return obj !== null && typeof obj === "object" && "constructor" in obj && obj.constructor === Object;
     }
@@ -3454,7 +3819,7 @@
             this.scrollWatcherLogging(`Я перестав стежити за ${targetElement.classList}`);
         }
         scrollWatcherLogging(message) {
-            this.config.logging ? FLS(`[Спостерігач]: ${message}`) : null;
+            this.config.logging ? functions_FLS(`[Спостерігач]: ${message}`) : null;
         }
         scrollWatcherCallback(entry, observer) {
             const targetElement = entry.target;
@@ -3467,7 +3832,7 @@
             }));
         }
     }
-    flsModules.watcher = new ScrollWatcher({});
+    modules_flsModules.watcher = new ScrollWatcher({});
     let addWindowScrollEvent = false;
     function pageNavigation() {
         document.addEventListener("click", pageNavigationAction);
@@ -3481,14 +3846,14 @@
                     const noHeader = gotoLink.hasAttribute("data-goto-header") ? true : false;
                     const gotoSpeed = gotoLink.dataset.gotoSpeed ? gotoLink.dataset.gotoSpeed : 500;
                     const offsetTop = gotoLink.dataset.gotoTop ? parseInt(gotoLink.dataset.gotoTop) : 0;
-                    if (flsModules.fullpage) {
+                    if (modules_flsModules.fullpage) {
                         const fullpageSection = document.querySelector(`${gotoLinkSelector}`).closest("[data-fp-section]");
                         const fullpageSectionId = fullpageSection ? +fullpageSection.dataset.fpId : null;
                         if (fullpageSectionId !== null) {
-                            flsModules.fullpage.switchingSection(fullpageSectionId);
+                            modules_flsModules.fullpage.switchingSection(fullpageSectionId);
                             document.documentElement.classList.contains("menu-open") ? menuClose() : null;
                         }
-                    } else gotoBlock(gotoLinkSelector, noHeader, gotoSpeed, offsetTop);
+                    } else gotoblock_gotoBlock(gotoLinkSelector, noHeader, gotoSpeed, offsetTop);
                     e.preventDefault();
                 }
             } else if (e.type === "watcherCallback" && e.detail) {
@@ -3511,7 +3876,7 @@
         if (getHash()) {
             let goToHash;
             if (document.querySelector(`#${getHash()}`)) goToHash = `#${getHash()}`; else if (document.querySelector(`.${getHash()}`)) goToHash = `.${getHash()}`;
-            goToHash ? gotoBlock(goToHash, true, 500, 20) : null;
+            goToHash ? gotoblock_gotoBlock(goToHash, true, 500, 20) : null;
         }
     }
     setTimeout((() => {
@@ -5246,7 +5611,7 @@ PERFORMANCE OF THIS SOFTWARE.
                 })
             });
         }));
-        flsModules.gallery = galleyItems;
+        modules_flsModules.gallery = galleyItems;
     }
     var header = document.getElementById("main-header");
     var scrollThreshold = 0;
@@ -5259,9 +5624,218 @@ PERFORMANCE OF THIS SOFTWARE.
             header.classList.add("no-box-shadow");
         }
     }));
+    document.addEventListener("DOMContentLoaded", (function() {
+        const form = document.querySelector("[data-ajax]");
+        form.addEventListener("submit", (async function(e) {
+            e.preventDefault();
+            const formItems = form.querySelectorAll(".form__item");
+            let hasError = false;
+            formItems.forEach((item => {
+                const input = item.querySelector("input, textarea");
+                if (!input) return;
+                const errorText = input.dataset.error || "Please fill out this field";
+                const isEmail = input.dataset.required === "email";
+                item.classList.remove("form__item--error");
+                const oldError = item.querySelector(".form__error");
+                if (oldError) oldError.remove();
+                if (!input.value.trim() || isEmail && !validateEmail(input.value)) {
+                    hasError = true;
+                    item.classList.add("form__item--error");
+                    const errorElement = document.createElement("div");
+                    errorElement.className = "form__error";
+                    errorElement.textContent = errorText;
+                    item.appendChild(errorElement);
+                }
+            }));
+            if (!hasError) {
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: formData,
+                        headers: {
+                            Accept: "application/json"
+                        }
+                    });
+                    if (response.ok) {
+                        alert("Message sent successfully!");
+                        form.reset();
+                    } else alert("An error occurred. Please try again.");
+                } catch (err) {
+                    alert("Submission failed. Check your connection.");
+                }
+            }
+        }));
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email.toLowerCase());
+        }
+    }));
+    const translations = {
+        en: {
+            "menu.technologies": "Technologies",
+            "menu.portfolios": "Portfolios",
+            "menu.education": "Education",
+            "menu.contacts": "Contacts",
+            resume: "Resume",
+            "main.label": "MY NAME IS",
+            "main.value": "Oleksii",
+            "main.big": "Bykovskyi",
+            "main.text": "I am a frontend developer with two years of experience working on freelance projects. I specialize in creating adaptive, fast and user-friendly interfaces that combine modern design and clean, maintainable code. During my work, I have successfully implemented more than 30 projects for clients from different countries, including lendings and multi-page websites.",
+            "technologies.label": "technologies",
+            "technologies.title": "Specialized in",
+            "technologies.text.1": "Like any programming language, HTML continues to evolve and improve over time. New tags and functionality are added to HTML, allowing for creating more interesting and functional web pages. Overall, HTML remains a key language for creating web pages, and its role in web development will continue to grow in the future.",
+            "technologies.text.2": "One of the main advantages of CSS is its flexibility. It allows you to create different styles for different devices and screens, which allows you to optimize your web pages for mobile devices, tablets and desktops. CSS has many features and capabilities and is therefore an essential tool for any web developer.",
+            "technologies.text.3": "JavaScript is an open source language that has a huge community of developers who create libraries and frameworks to make development easier. Due to its flexibility, simplicity and many other features, JavaScript is one of the most popular programming languages ​​in the world and is widely used in web development.",
+            "portfolio.label": "MY WORKS",
+            "portfolio.title": "Featured Portfolios",
+            "skills.label": "LEARNING PATH",
+            "skills.title": "Education & Skills",
+            "skills.text": "The learning process took more than one year. During this period I was constantly learning about front-end and experimenting with new technologies and frameworks, and here you can see a brief description of my skills."
+        },
+        uk: {
+            "menu.technologies": "Технології",
+            "menu.portfolios": "Портфоліо",
+            "menu.education": "Освіта",
+            "menu.contacts": "Контакти",
+            resume: "Резюме",
+            "main.label": "МЕНЕ ЗВАТИ",
+            "main.value": "Олексій",
+            "main.big": "Биковський",
+            "main.text": "Я фронтенд-розробник з дворічним досвідом роботи над фриланс-проєктами. Спеціалізуюсь на створенні адаптивних, швидких та зручних інтерфейсів, які поєднують сучасний дизайн і чистий, підтримуваний код. За час своєї роботи успішно реалізував понад 30 проєктів для клієнтів з різних країн, включаючи лендінги та багатосторінкові сайти.",
+            "technologies.label": "технології",
+            "technologies.title": "Я спеціалізуюся на",
+            "technologies.text.1": "Як і будь-яка мова програмування, HTML продовжує розвиватися і вдосконалюватися з часом. До HTML додаються нові теги та функціональні можливості, що дозволяє створювати більш цікаві та функціональні веб-сторінки. Загалом, HTML залишається ключовою мовою для створення веб-сторінок, і її роль у веб-розробці продовжуватиме зростати в майбутньому.",
+            "technologies.text.2": "Однією з головних переваг CSS є її гнучкість. Він дозволяє створювати різні стилі для різних пристроїв і екранів, що дає змогу оптимізувати веб-сторінки для мобільних пристроїв, планшетів і настільних комп'ютерів. CSS має багато функцій і можливостей, а тому є важливим інструментом для будь-якого веб-розробника.",
+            "technologies.text.3": "JavaScript - це мова з відкритим вихідним кодом, яка має величезну спільноту розробників, що створюють бібліотеки та фреймворки для полегшення розробки. Завдяки своїй гнучкості, простоті та багатьом іншим особливостям JavaScript є однією з найпопулярніших мов програмування у світі і широко використовується у веб-розробці.",
+            "portfolio.label": "МОЇ РОБОТИ",
+            "portfolio.title": "Кращі портфоліо",
+            "skills.label": "ШЛЯХ НАВЧАННЯ",
+            "skills.title": "Освіта та Навички",
+            "skills.text": "Процес навчання зайняв більше року. Протягом цього періоду я постійно вивчав фронтенд і експериментував з новими технологіями та фреймворками, а підсумок моїх навичок ви можете побачити тут."
+        },
+        ru: {
+            "menu.technologies": "Технологии",
+            "menu.portfolios": "Портфолио",
+            "menu.education": "Образование",
+            "menu.contacts": "Контакты",
+            resume: "Резюме",
+            "main.label": "МЕНЯ ЗОВУТ",
+            "main.value": "Алексей",
+            "main.big": "Быковский",
+            "main.text": "Я фронтенд-разработчик с двухлетним опытом работы над фриланс-проектами. Специализируюсь на создании адаптивных, быстрых и удобных интерфейсов, сочетающих современный дизайн и чистый, поддерживаемый код. За время своей работы успешно реализовал более 30 проектов для клиентов из разных стран, включая лендинги и многостраничные сайты.",
+            "technologies.label": "технологии",
+            "technologies.title": "Я специализируюсь на",
+            "technologies.text.1": "Как и любой другой язык программирования, HTML продолжает развиваться и совершенствоваться с течением времени. В HTML добавляются новые теги и функции, позволяющие создавать более интересные и функциональные веб-страницы. В целом, HTML остается ключевым языком для создания веб-страниц, и его роль в веб-разработке будет расти и в будущем.",
+            "technologies.text.2": "Одно из главных преимуществ CSS - его гибкость. Он позволяет создавать различные стили для разных устройств и экранов, что позволяет оптимизировать веб-страницы для мобильных устройств, планшетов и настольных компьютеров. CSS обладает множеством функций и возможностей, поэтому является незаменимым инструментом для любого веб-разработчика.",
+            "technologies.text.3": "JavaScript - это язык с открытым исходным кодом, имеющий огромное сообщество разработчиков, которые создают библиотеки и фреймворки для упрощения разработки. Благодаря своей гибкости, простоте и многим другим особенностям, JavaScript является одним из самых популярных языков программирования в мире и широко используется в веб-разработке.",
+            "portfolio.label": " МОИ РАБОТЫ",
+            "portfolio.title": "Избранные портфолио",
+            "skills.label": "УЧЕБНЫЙ ПУТЬ",
+            "skills.title": "Образование и Навыки",
+            "skills.text": "Процесс обучения занял больше года. В течение этого периода я постоянно изучал front-end и экспериментировал с новыми технологиями и фреймворками, и здесь вы можете увидеть сводку моих навыков."
+        }
+    };
+    function translatePage(language) {
+        const elements = document.querySelectorAll("[data-i18n]");
+        elements.forEach((el => {
+            const key = el.getAttribute("data-i18n");
+            const translation = translations[language][key];
+            if (translation) {
+                el.classList.add("fading");
+                setTimeout((() => {
+                    el.textContent = translation;
+                    el.classList.remove("fading");
+                }), 250);
+            }
+        }));
+    }
+    function getLanguageByValue(value) {
+        switch (value) {
+          case "1":
+            return "en";
+
+          case "2":
+            return "uk";
+
+          case "3":
+            return "ru";
+
+          default:
+            return "en";
+        }
+    }
+    function getValueByLanguage(lang) {
+        switch (lang) {
+          case "en":
+            return "1";
+
+          case "uk":
+            return "2";
+
+          case "ru":
+            return "3";
+
+          default:
+            return "1";
+        }
+    }
+    document.addEventListener("DOMContentLoaded", (() => {
+        const select = document.querySelector(".languages-header__control select");
+        if (!select) return;
+        const savedLang = localStorage.getItem("lang");
+        const langToUse = savedLang || getLanguageByValue(select.value);
+        select.value = getValueByLanguage(langToUse);
+        if (select.closest(".select")) {
+            const fakeSelectItem = select.closest(".select").querySelector(".select__value");
+            const selectedOption = select.querySelector(`option[value="${select.value}"]`);
+            if (fakeSelectItem && selectedOption) fakeSelectItem.textContent = selectedOption.textContent;
+        }
+        translatePage(langToUse);
+    }));
+    document.addEventListener("click", (e => {
+        const option = e.target.closest(".select__option");
+        if (option && option.closest(".languages-header__control")) {
+            const value = option.dataset.value;
+            const lang = getLanguageByValue(value);
+            localStorage.setItem("lang", lang);
+            translatePage(lang);
+        }
+    }));
+    document.addEventListener("DOMContentLoaded", (() => {
+        const logo = document.querySelector(".header__logo");
+        const menuLinks = document.querySelectorAll(".menu__link");
+        menuLinks.forEach((link => {
+            link.addEventListener("click", (() => {
+                setActiveLink(link);
+            }));
+        }));
+        logo.addEventListener("click", (() => {
+            setActiveLink(logo);
+        }));
+        function setActiveLink(activeElement) {
+            logo.classList.remove("active");
+            menuLinks.forEach((l => l.classList.remove("active")));
+            activeElement.classList.add("active");
+        }
+        const sections = Array.from(menuLinks).map((link => {
+            const selector = link.dataset.goto;
+            return {
+                link,
+                section: document.querySelector(selector)
+            };
+        }));
+        window.addEventListener("scroll", (() => {
+            let currentSection = null;
+            sections.forEach((({section, link}) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom > 100) currentSection = link;
+            }));
+            if (currentSection) setActiveLink(currentSection); else if (window.scrollY < 200) setActiveLink(logo);
+        }));
+    }));
     window["FLS"] = true;
     isWebp();
     menuInit();
-    formSubmit();
     pageNavigation();
 })();
