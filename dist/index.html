@@ -6,7 +6,7 @@
 	<meta charset="UTF-8">
 	<meta name="format-detection" content="telephone=no">
 	<!-- <style>body{opacity: 0;}</style> -->
-	<link rel="stylesheet" href="css/style.min.css?_v=20250505195808">
+	<link rel="stylesheet" href="css/style.min.css?_v=20250509173439">
 	<link rel="shortcut icon" href="favicon.ico">
 	<!-- <meta name="robots" content="noindex, nofollow"> -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -85,8 +85,8 @@
 							<a href="https://www.linkedin.com/in/oleksiibykovskyi/" target="_blank" class="social__link _icon-s-linkedin"></a>
 						</div>
 					</div>
-					<div class="main-section__decor decor-main-section">
-						<div class="decor-main-section__box">
+					<div data-prlx-parent class="main-section__decor decor-main-section">
+						<div data-prlx class="decor-main-section__box">
 							<div class="decor-main-section__image">
 								<picture><source srcset="img/main/my-photo-1.webp" type="image/webp"><img class="decor-main-section__picture" src="img/main/my-photo-1.png" alt="Picture" /></picture>
 							</div>
@@ -96,7 +96,7 @@
 			</section>
 			<section class="page__technologies technologies">
 				<div class="technologies__container">
-					<div class="technologies__title title">
+					<div data-watch class="technologies__title title">
 						<div data-i18n="technologies.label" class="title__label">
 							technologies
 						</div>
@@ -104,7 +104,7 @@
 							Specialized in
 						</h2>
 					</div>
-					<ul class="technologies__items items-technologies">
+					<ul data-watch class="technologies__items items-technologies">
 						<li class="technologies__item item-technologies">
 							<div class="item-technologies__icon">
 								<img src="img/services/icons/html5.svg" alt="Icon" />
@@ -156,7 +156,7 @@
 					</ul>
 				</div>
 			</section>
-			<section class="page__portfolio portfolio">
+			<section data-watch class="page__portfolio portfolio">
 				<div class="portfolio__container">
 					<div class="portfolio__header">
 						<div class="title">
@@ -361,7 +361,7 @@
 					</div>
 				</div>
 			</section>
-			<section class="page__skills skills">
+			<section data-watch class="page__skills skills">
 				<div class="skills__container">
 					<div class="skills__title">
 						<div data-i18n="skills.label" class="title__label">
@@ -371,8 +371,8 @@
 							Education & Skills
 						</h2>
 					</div>
-					<div class="skills__body">
-						<div data-gallery class="education__sertificate">
+					<div data-prlx-parent class="skills__body">
+						<div data-prlx data-gallery class="education__sertificate">
 							<a href="img/main/certificate.jpg" class="education__image">
 								<picture><source srcset="img/main/certificate.webp" type="image/webp"><img src="img/main/certificate.jpg" alt="Certificate" /></picture>
 							</a>
@@ -410,21 +410,21 @@
 					</div>
 				</div>
 			</section>
-			<section class="page__contacts contacts">
+			<section data-watch class="page__contacts contacts">
 				<div class="contacts__container">
 					<div class="contacts__content">
 						<form data-ajax method="POST" action="https://formspree.io/f/xpwdadbg" class="contacts__form form">
 							<div class="form__item">
-								<input data-required autocomplete="off" type="text" name="form[]" data-error="Write your name" placeholder="Name" class="form__input" />
+								<input data-required autocomplete="off" type="text" name="form[]" data-error="Write your name" data-i18n-placeholder="form.placeholder.name" data-i18n-error="form.error.name" placeholder="Name" class="form__input" />
 							</div>
 							<div class="form__item">
-								<input data-required="email" autocomplete="off" type="text" name="form[]" data-error="Enter your email" placeholder="Email" class="form__input" />
+								<input data-required="email" autocomplete="off" type="text" name="form[]" data-error="Enter your email" data-i18n-placeholder="form.placeholder.email" data-i18n-error="form.error.email" placeholder="Email" class="form__input" />
 							</div>
 							<div class="form__item">
-								<textarea autocomplete="off" name="form[]" placeholder="Message" data-error="Write a letter" class="form__input"></textarea>
+								<textarea autocomplete="off" name="form[]" data-i18n-placeholder="form.placeholder.message" data-i18n-error="form.error.message" placeholder="Message" data-error="Write a letter" class="form__input"></textarea>
 							</div>
 							<div class="form__item">
-								<button type="submit" class="form__button">
+								<button data-i18n="form.button" type="submit" class="form__button">
 									Send Message
 								</button>
 							</div>
@@ -436,8 +436,10 @@
 										<img src="img/contacts/icons/pin.svg" alt="Icon" />
 									</div>
 									<div class="list-contacts__body">
-										<div class="list-contacts__title">Address</div>
-										<a href="https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%9F%D0%B5%D1%82%D1%80%D0%B0+%D0%97%D0%B0%D0%BF%D0%BE%D1%80%D0%BE%D0%B6%D1%86%D0%B0,+3,+%D0%9A%D0%B8%D0%B5%D0%B2,+02000/@50.4789957,30.5966269,17z/data=!3m1!4b1!4m6!3m5!1s0x40d4d03adcf7b231:0x639c617ff5398a40!8m2!3d50.4789957!4d30.5966269!16s%2Fg%2F1tdsh940" target="_blank" class="list-contacts__text">
+										<div data-i18n="contacts.address" class="list-contacts__title">
+											Address
+										</div>
+										<a href="https://www.google.com/maps/place/%D1%83%D0%BB.+%D0%9F%D0%B5%D1%82%D1%80%D0%B0+%D0%97%D0%B0%D0%BF%D0%BE%D1%80%D0%BE%D0%B6%D1%86%D0%B0,+3,+%D0%9A%D0%B8%D0%B5%D0%B2,+02000/@50.4789957,30.5966269,17z/data=!3m1!4b1!4m6!3m5!1s0x40d4d03adcf7b231:0x639c617ff5398a40!8m2!3d50.4789957!4d30.5966269!16s%2Fg%2F1tdsh940" target="_blank" data-i18n="contacts.dress" class="list-contacts__text">
 											Kyiv, st. Petra - Zaporozhets 3
 										</a>
 									</div>
@@ -447,7 +449,9 @@
 										<img src="img/contacts/icons/phone.svg" alt="Icon" />
 									</div>
 									<div class="list-contacts__body">
-										<div class="list-contacts__title">Phone</div>
+										<div data-i18n="contacts.phone" class="list-contacts__title">
+											Phone
+										</div>
 										<a href="tel:+380674473513" class="list-contacts__text">+38 067 447 35 13</a>
 									</div>
 								</li>
@@ -456,7 +460,9 @@
 										<img src="img/contacts/icons/mail.svg" alt="Icon" />
 									</div>
 									<div class="list-contacts__body">
-										<div class="list-contacts__title">E-Mail</div>
+										<div data-i18n="contacts.mail" class="list-contacts__title">
+											E-Mail
+										</div>
 										<a href="mailto:bikovskij97@gmail.com" class="list-contacts__text">bikovskij97@gmail.com</a>
 									</div>
 								</li>
@@ -481,7 +487,7 @@
 		</div>
 
 	</div>
-	<script src="js/app.min.js?_v=20250505195808"></script>
+	<script src="js/app.min.js?_v=20250509173439"></script>
 </body>
 
 </html>

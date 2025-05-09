@@ -3833,6 +3833,76 @@
         }
     }
     modules_flsModules.watcher = new ScrollWatcher({});
+    class parallax_Parallax {
+        constructor(elements) {
+            if (elements.length) this.elements = Array.from(elements).map((el => new parallax_Parallax.Each(el, this.options)));
+        }
+        destroyEvents() {
+            this.elements.forEach((el => {
+                el.destroyEvents();
+            }));
+        }
+        setEvents() {
+            this.elements.forEach((el => {
+                el.setEvents();
+            }));
+        }
+    }
+    parallax_Parallax.Each = class {
+        constructor(parent) {
+            this.parent = parent;
+            this.elements = this.parent.querySelectorAll("[data-prlx]");
+            this.animation = this.animationFrame.bind(this);
+            this.offset = 0;
+            this.value = 0;
+            this.smooth = parent.dataset.prlxSmooth ? Number(parent.dataset.prlxSmooth) : 15;
+            this.setEvents();
+        }
+        setEvents() {
+            this.animationID = window.requestAnimationFrame(this.animation);
+        }
+        destroyEvents() {
+            window.cancelAnimationFrame(this.animationID);
+        }
+        animationFrame() {
+            const topToWindow = this.parent.getBoundingClientRect().top;
+            const heightParent = this.parent.offsetHeight;
+            const heightWindow = window.innerHeight;
+            const positionParent = {
+                top: topToWindow - heightWindow,
+                bottom: topToWindow + heightParent
+            };
+            const centerPoint = this.parent.dataset.prlxCenter ? this.parent.dataset.prlxCenter : "center";
+            if (positionParent.top < 30 && positionParent.bottom > -30) switch (centerPoint) {
+              case "top":
+                this.offset = -1 * topToWindow;
+                break;
+
+              case "center":
+                this.offset = heightWindow / 2 - (topToWindow + heightParent / 2);
+                break;
+
+              case "bottom":
+                this.offset = heightWindow - (topToWindow + heightParent);
+                break;
+            }
+            this.value += (this.offset - this.value) / this.smooth;
+            this.animationID = window.requestAnimationFrame(this.animation);
+            this.elements.forEach((el => {
+                const parameters = {
+                    axis: el.dataset.axis ? el.dataset.axis : "v",
+                    direction: el.dataset.direction ? el.dataset.direction + "1" : "-1",
+                    coefficient: el.dataset.coefficient ? Number(el.dataset.coefficient) : 5,
+                    additionalProperties: el.dataset.properties ? el.dataset.properties : ""
+                };
+                this.parameters(el, parameters);
+            }));
+        }
+        parameters(el, parameters) {
+            if (parameters.axis == "v") el.style.transform = `translate3D(0, ${(parameters.direction * (this.value / parameters.coefficient)).toFixed(2)}px,0) ${parameters.additionalProperties}`; else if (parameters.axis == "h") el.style.transform = `translate3D(${(parameters.direction * (this.value / parameters.coefficient)).toFixed(2)}px,0,0) ${parameters.additionalProperties}`;
+        }
+    };
+    if (document.querySelectorAll("[data-prlx-parent]")) modules_flsModules.parallax = new parallax_Parallax(document.querySelectorAll("[data-prlx-parent]"));
     let addWindowScrollEvent = false;
     function pageNavigation() {
         document.addEventListener("click", pageNavigationAction);
@@ -5691,7 +5761,18 @@ PERFORMANCE OF THIS SOFTWARE.
             "portfolio.title": "Featured Portfolios",
             "skills.label": "LEARNING PATH",
             "skills.title": "Education & Skills",
-            "skills.text": "The learning process took more than one year. During this period I was constantly learning about front-end and experimenting with new technologies and frameworks, and here you can see a brief description of my skills."
+            "skills.text": "The learning process took more than one year. During this period I was constantly learning about front-end and experimenting with new technologies and frameworks, and here you can see a brief description of my skills.",
+            "form.placeholder.name": "Name",
+            "form.placeholder.email": "Email",
+            "form.placeholder.message": "Message",
+            "form.button": "Send Message",
+            "contacts.address": "Address",
+            "contacts.dress": "Kyiv, st. Petra - Zaporozhets 3",
+            "contacts.phone": "Phone",
+            "contacts.mail": "E-Mail",
+            "form.error.name": "Write your name",
+            "form.error.email": "Enter your email",
+            "form.error.message": "Write a letter"
         },
         uk: {
             "menu.technologies": "Технології",
@@ -5712,7 +5793,18 @@ PERFORMANCE OF THIS SOFTWARE.
             "portfolio.title": "Кращі портфоліо",
             "skills.label": "ШЛЯХ НАВЧАННЯ",
             "skills.title": "Освіта та Навички",
-            "skills.text": "Процес навчання зайняв більше року. Протягом цього періоду я постійно вивчав фронтенд і експериментував з новими технологіями та фреймворками, а підсумок моїх навичок ви можете побачити тут."
+            "skills.text": "Процес навчання зайняв більше року. Протягом цього періоду я постійно вивчав фронтенд і експериментував з новими технологіями та фреймворками, а підсумок моїх навичок ви можете побачити тут.",
+            "form.placeholder.name": "Ім’я",
+            "form.placeholder.email": "Електронна пошта",
+            "form.placeholder.message": "Повідомлення",
+            "form.button": "Відправити повідомлення",
+            "contacts.address": "Адреса",
+            "contacts.dress": "Київ, вул. Петра - Запорожця 3",
+            "contacts.phone": "Телефон",
+            "contacts.mail": "Електронна пошта",
+            "form.error.name": "Введіть ваше ім’я",
+            "form.error.email": "Введіть вашу електронну пошту",
+            "form.error.message": "Напишіть повідомлення"
         },
         ru: {
             "menu.technologies": "Технологии",
@@ -5733,7 +5825,18 @@ PERFORMANCE OF THIS SOFTWARE.
             "portfolio.title": "Избранные портфолио",
             "skills.label": "УЧЕБНЫЙ ПУТЬ",
             "skills.title": "Образование и Навыки",
-            "skills.text": "Процесс обучения занял больше года. В течение этого периода я постоянно изучал front-end и экспериментировал с новыми технологиями и фреймворками, и здесь вы можете увидеть сводку моих навыков."
+            "skills.text": "Процесс обучения занял больше года. В течение этого периода я постоянно изучал front-end и экспериментировал с новыми технологиями и фреймворками, и здесь вы можете увидеть сводку моих навыков.",
+            "form.placeholder.name": "Имя",
+            "form.placeholder.email": "Электронная почта",
+            "form.placeholder.message": "Сообщение",
+            "form.button": "Отправить сообщение",
+            "contacts.address": "Адрес",
+            "contacts.dress": "Киев, ул. Петра - Запорожца 3",
+            "contacts.phone": "Телефон",
+            "contacts.mail": "Электронная почта",
+            "form.error.name": "Введите ваше имя",
+            "form.error.email": "Введите вашу электронную почту",
+            "form.error.message": "Напишите сообщение"
         }
     };
     function translatePage(language) {
@@ -5748,6 +5851,18 @@ PERFORMANCE OF THIS SOFTWARE.
                     el.classList.remove("fading");
                 }), 250);
             }
+        }));
+        const placeholders = document.querySelectorAll("[data-i18n-placeholder]");
+        placeholders.forEach((el => {
+            const key = el.getAttribute("data-i18n-placeholder");
+            const translation = translations[language][key];
+            if (translation) el.placeholder = translation;
+        }));
+        const errorFields = document.querySelectorAll("[data-i18n-error]");
+        errorFields.forEach((el => {
+            const key = el.getAttribute("data-i18n-error");
+            const translation = translations[language][key];
+            if (translation) el.setAttribute("data-error", translation);
         }));
     }
     function getLanguageByValue(value) {

@@ -681,6 +681,46 @@ body {
   left: 0;
 }
 
+.title__label,
+.title__value,
+.main-section__text {
+  opacity: 0;
+  -webkit-transform: translateY(1.25rem);
+      -ms-transform: translateY(1.25rem);
+          transform: translateY(1.25rem);
+}
+
+.title__label {
+  -webkit-animation: fade-in 0.8s ease-in-out 0.4s forwards;
+          animation: fade-in 0.8s ease-in-out 0.4s forwards;
+}
+
+.title__value {
+  -webkit-animation: fade-in 0.8s ease-in-out 0.6s forwards;
+          animation: fade-in 0.8s ease-in-out 0.6s forwards;
+}
+
+.main-section__text {
+  -webkit-animation: fade-in 0.8s ease-in-out 0.8s forwards;
+          animation: fade-in 0.8s ease-in-out 0.8s forwards;
+}
+
+@-webkit-keyframes fade-in {
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0rem);
+            transform: translateY(0rem);
+  }
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+    -webkit-transform: translateY(0rem);
+            transform: translateY(0rem);
+  }
+}
+
 .technologies__container {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -696,6 +736,24 @@ body {
       -ms-flex-align: center;
           align-items: center;
   padding-top: 5.625rem;
+}
+
+.technologies__title {
+  -webkit-transform: translate(0px, 10%);
+      -ms-transform: translate(0px, 10%);
+          transform: translate(0px, 10%);
+  opacity: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.technologies__title._watcher-view {
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  -webkit-transform: translate(0px, 0px);
+      -ms-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+  opacity: 1;
 }
 
 .technologies__items {
@@ -714,6 +772,14 @@ body {
   display: grid;
   justify-items: center;
   text-align: center;
+  -webkit-transform: translate(0, 15%);
+      -ms-transform: translate(0, 15%);
+          transform: translate(0, 15%);
+  opacity: 0;
+  -webkit-transition: opacity 0.5s, -webkit-transform 0.5s;
+  transition: opacity 0.5s, -webkit-transform 0.5s;
+  transition: transform 0.5s, opacity 0.5s;
+  transition: transform 0.5s, opacity 0.5s, -webkit-transform 0.5s;
 }
 
 .item-technologies__icon {
@@ -749,6 +815,46 @@ body {
   font-weight: 400;
   font-size: 0.875rem;
   line-height: 1.5rem;
+}
+
+._watcher-view .item-technologies {
+  -webkit-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+          transform: translate(0, 0);
+  opacity: 1;
+}
+
+._watcher-view .item-technologies:nth-child(1) {
+  -webkit-transition-delay: 0.2s;
+          transition-delay: 0.2s;
+}
+
+._watcher-view .item-technologies:nth-child(2) {
+  -webkit-transition-delay: 0.4s;
+          transition-delay: 0.4s;
+}
+
+._watcher-view .item-technologies:nth-child(3) {
+  -webkit-transition-delay: 0.6s;
+          transition-delay: 0.6s;
+}
+
+.portfolio {
+  -webkit-transform: translate(0px, 10%);
+      -ms-transform: translate(0px, 10%);
+          transform: translate(0px, 10%);
+  opacity: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.portfolio._watcher-view {
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  -webkit-transform: translate(0px, 0px);
+      -ms-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+  opacity: 1;
 }
 
 .portfolio__container {
@@ -884,6 +990,24 @@ body {
   transition: color 0.3s ease 0s;
 }
 
+.skills {
+  -webkit-transform: translate(0px, 10%);
+      -ms-transform: translate(0px, 10%);
+          transform: translate(0px, 10%);
+  opacity: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.skills._watcher-view {
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  -webkit-transform: translate(0px, 0px);
+      -ms-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+  opacity: 1;
+}
+
 .skills__container {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -964,6 +1088,21 @@ body {
   -webkit-box-flex: 1;
       -ms-flex: 1 1 auto;
           flex: 1 1 auto;
+  -webkit-transform: translate(0px, 10%);
+      -ms-transform: translate(0px, 10%);
+          transform: translate(0px, 10%);
+  opacity: 0;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.contacts._watcher-view {
+  -webkit-transition: all 0.8s;
+  transition: all 0.8s;
+  -webkit-transform: translate(0px, 0px);
+      -ms-transform: translate(0px, 0px);
+          transform: translate(0px, 0px);
+  opacity: 1;
 }
 
 .contacts__container {
@@ -1043,6 +1182,10 @@ body {
 
 .form__input::placeholder {
   color: #656d72;
+}
+
+.form__input:focus {
+  border: #645bca;
 }
 
 .form__input:focus::-webkit-input-placeholder {
