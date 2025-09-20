@@ -675,7 +675,7 @@ body {
 
 .decor-main-section__picture {
   z-index: 3;
-  max-width: 100%;
+  max-width: 70%;
   position: absolute;
   bottom: 0;
   left: 0;
